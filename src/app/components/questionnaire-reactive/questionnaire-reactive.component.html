@@ -1,0 +1,117 @@
+<div class="alert alert-success" id="saved" role="alert" style="display: none;">
+    <span id="successMessage"></span>
+</div>
+
+<div class="alert alert-danger" id="error" role="alert" style="display: none;">
+    <span id="errorMessage"></span>
+</div>
+
+<app-questionnaire-identifiers (newFilterEvent)="getFilter($event)"></app-questionnaire-identifiers>
+
+<!--PRE QUESTIONNAIRE-->
+<div *ngIf="!bodyPresent" class=" container border rounded d-flex justify-content-center align-items-xl-center"
+    style="height: 200px;">
+    <h3>Επιλέξτε τα αναγνωριστικά για να συμπληρώσετε το ερωτηματολόγιο</h3>
+</div>
+
+<!--AFTER QUESTIONNAIRE-->
+<div *ngIf="bodyPresent && (qBodyState$|async) as qBodyState" [ngSwitch]="qBodyState.dataState" class="container">
+
+    <!--LOADING-->
+    <div *ngSwitchCase="DataState.LOADING" class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <!--LOADED-->
+    <div *ngSwitchCase="DataState.LOADED">
+
+
+        <form #qForm="ngForm" (ngSubmit)="save()" [appCounter]="0">
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+
+                <div *ngFor="let group of qBodyState.appData.data.questionnaire.questionnaire;let k = index" class="accordion-item">
+                    <!--ACOORDEON HEAD-->
+                    <h4 class="accordion-header" id="{{'panelsStayOpen-heading'+k}}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            attr.data-bs-target="{{'#panelsStayOpen-collapse'+k}}" aria-expanded="true"
+                            attr.aria-controls="{{'panelsStayOpen-collapse'+k}}">
+                            {{group.name}}
+                        </button>
+                    </h4>
+                    <!--ACOORDEON BODY-->
+                    <div id="{{'panelsStayOpen-collapse'+k}}" class="accordion-collapse collapse show"
+                        attr.aria-labelledby="{{'panelsStayOpen-heading'+k}}">
+
+                        <div class="accordion-body">
+                            <!--GRID HEADER-->
+                            <div *ngIf="group.eligibleResponses.length != 0" class="row">
+                                <div class="col-4 d-flex justify-content-xl-center align-items-xl-center"
+                                    style="border:1px solid">
+                                    <h5 style="margin-top: 8px;">Ερωτήσεις</h5>
+                                </div>
+                                <div *ngFor="let eligibleResponse of group.eligibleResponses"
+                                    class="col d-flex justify-content-md-center align-items-md-center"
+                                    style="border:1px solid">
+                                    <h6 class="text-truncate">{{eligibleResponse}}</h6>
+                                </div>
+                            </div>
+                            <!--GRID BODY-->
+                            <div *ngFor="let question of group.questions;let j = index" #counter="appCounter" appCounter
+                                class="row">
+
+                                <div *ngIf="group.eligibleResponses.length != 0" class="form-group d-flex"
+                                    style="margin: 0px;padding: 0px;">
+                                    <div class="col-4 d-flex justify-content-xl-center align-items-xl-center"
+                                        style="border:1px solid">
+                                        <h6 style="margin-top: 8px;" class="text-break">{{question.question}}</h6>
+                                    </div>
+                                    <div *ngFor="let eligibleResponse of group.eligibleResponses;let i = index"
+                                        class="col d-flex justify-content-md-center align-items-md-center"
+                                        style="border:1px solid">
+                                        <input [(ngModel)]="responses[counter.index-1].response"
+                                            [value]="eligibleResponse" class="form-check-input" type="radio"
+                                            name="{{'response'+k+i+j}}" id="{{'inlineRadio'+k+i+j}}" required>
+
+                                    </div>
+                                </div>
+                                <!--AN I EROTISI EINAI TEXT  [(ngModel)]="responses[counter.index].response" -->
+                                <div *ngIf="group.eligibleResponses.length == 0" class="form-group"
+                                    style="background-color: #ffffff;">
+                                    <h5>{{question.question}}</h5>
+                                    <textarea [(ngModel)]="responses[counter.index -1].response"
+                                        [value]="question.userResponse" class="form-control" name="{{'response'+k+j}}"
+                                        id="exampleFormControlTextarea1" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-center" style="margin-top: 15px;margin-bottom: 30px;">
+                <button type="submit" class="btn btn-primary" [disabled]="qForm.invalid || (isLoading$|async)">
+                    <div *ngIf="!(isLoading$|async)">
+                        <span>Αποθήκευση Απαντήσεων</span>
+                        <i class="bi bi-save"></i>
+                    </div>
+                    <div *ngIf="(isLoading$|async)" class="spinner-border" role="status">
+                        <span class="sr-only">Αποθήκευση..</span>
+                    </div>
+                </button>
+            </div>
+
+        </form>
+    </div>
+    <!--ERROR-->
+    <div *ngSwitchCase="DataState.ERROR">   
+        <div class="alert alert-info text-center" role="alert">
+            {{error}}
+        </div>
+    </div>
+
+
+</div>

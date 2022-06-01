@@ -1,0 +1,44 @@
+
+<!-- {{filterState$|async|json}} -->
+<div *ngIf="(filterState$|async) as filterState"[ngSwitch]="filterState.dataState">
+
+    <div *ngSwitchCase="DataState.LOADING">
+
+    </div>
+    <div *ngSwitchCase="DataState.LOADED">
+    
+        <div class="row border-bottom" style="padding: 15px;">
+            <span class="col">Αριθμός απαντήσεων:</span>
+            <span class="col">{{filterState.appData.data.filter.numOfResponses}}</span>
+        </div>
+
+        <div class="row border-bottom"  style="padding: 15px;">
+            <span class="col ">Κατάσταση</span>
+            <div class="col">
+                <label class="switch">
+                    <input (change)="checkValue(enabled?'1':'0')" type="checkbox" [(ngModel)]="enabled">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+        </div>
+
+        <div class="row border-bottom"  style="padding: 15px;">
+            <span class="col">Ενεργό μέχρι</span>
+            <!-- <span class="col">{{filterState.appData.activeFor | date:'short'}}</span> -->
+            <div class="col">
+                <!-- {{filterState.appData.activeFor | date:'yyyy-MM-ddTHH:mm'}} -->
+                <input (input)="dateChanged()"  class="form-control" type="datetime-local" value="{{filterState.appData.data.filter.activeFor | date:'yyyy-MM-ddTHH:mm'}}" [(ngModel)]="date" >
+            </div>
+        </div>
+        <div style="display: none;">
+            <button (click)="printPdf()" class="btn btn-info"><i class="fa fa-file-pdf-o"></i> | Αποθήκευση ως PDF</button>
+        </div>
+
+        
+
+    </div>
+    <div *ngSwitchCase="DataState.ERROR">
+
+    </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="alert alert-success" id="change" role="alert" style="display: none;">
+    <span id="successMessage"></span>
+</div>
+<!--IDENNTIFIERS BLOCK-->
+<app-questionnaire-identifiers (newFilterEvent)="getFilter($event)"></app-questionnaire-identifiers>
+
+<div *ngIf=" resultIsPresent" class="row">
+
+
+    <div class="col-8 results" *ngIf="(qResultState$|async) as qResultState" [ngSwitch]="qResultState.dataState">
+
+        <div *ngSwitchCase="DataState.LOADING" class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+
+        <div *ngSwitchCase="DataState.LOADED" id="pdf" class="pdf">
+            <div  class="border rounded" *ngFor="let group of qResultState.appData.questionnaire"
+                style="margin: 15px;padding: 15px;">
+                <div class="d-flex justify-content-xl-between align-items-xl-center">
+                    <h4>{{group.name}}</h4>
+                    <span class="border rounded" style="padding: 5px;">{{group.responseType}}</span>
+                </div>
+
+
+                <div  *ngIf="group.responseType != 'TEXT'" class="container border" style="margin-top: 15px;">
+                    <!-- Header katigorias -->
+                    <div class="row">
+                        <div class="col text-center" style="border-bottom: 1px solid;border-right:1px solid;">
+                            <h5 style="padding: 15px;margin-bottom: 0px;">Ερωτήσεις</h5>
+                        </div>
+                        <div class="col text-center" style="border-bottom:1px solid ;">
+                            <h5 style="padding: 15px;margin-bottom: 0px;">Αποτελέσματα</h5>
+                        </div>
+                    </div>
+                    <!-- Apotelesmata Katigorias -->
+                    <div *ngFor="let question of group.questions" class="row ">
+                        <div class="col text-center d-flex justify-content-center align-items-xl-center"
+                            style="border-right: 1px solid;border-bottom: 1px solid;padding: 5px;">
+                            <span style="font-size:large">{{question.question}}</span>
+
+                        </div>
+                        <div class="col text-center" style="border-bottom: 1px solid;padding: 5px;">
+                            <!-- <span style="font-size:large">{{question.result}}</span> -->
+                            <canvas baseChart [data]="createDataSet(question.resultMap)"  [type]="'bar'" [legend]="barChartLegend" [options]="options" hoverBackgroundColor="black">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div *ngIf="group.responseType == 'TEXT'" class="pdf-ignore">
+
+                    <div>
+                        <div *ngFor="let question of group.questions">
+                            <div class="d-flex justify-content-xl-between" style="margin-top: 15px;">
+                                <h4 style="margin-bottom: 0px;">{{question.question}}</h4>
+                                <div id="reCounter" style="display: none;">
+                                    <span>Απάντηση </span>
+                                    <span id="counter"></span>
+                                    <span>{{'/'+question.result.split(',').length}}</span>
+                                </div>
+                            </div>
+                            <div class="mySlides">
+
+                                <p class="border text-center d-flex justify-content-xl-center align-items-xl-center"
+                                    style="height: 200px;font-size: large;">
+                                    Πατήστε τα κουμπιά για να δείτε τις απαντήσεις
+                                </p>
+                            </div>
+                            <div *ngFor="let response of question.result.split(',')" class="mySlides"
+                                style="width: 100%;display: none;">
+                                <p class="border" style="height: 200px;font-size: large;padding: 15px;">
+                                    {{response}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-xl-center ">
+                        <button class="btn btn-info" onclick="plusDivs(-1);showCounter()">❮ Προηγούμενο</button>
+                        <button class="btn btn-info" onclick="plusDivs(1);showCounter()"
+                            style="margin-left: 5px;">Επόμενο
+                            ❯</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngSwitchCase="DataState.ERROR">
+            ERROR
+        </div>
+
+    </div>
+
+    <!-- ASIDE COMPONTENT -->
+    <div class="col border" style="margin: 15px;padding: 15px;">
+        <h4>Λεπτομέρειες</h4>
+        <questionnare-stats [parentFilter]="filter" (pfdClick)="printPdf()"></questionnare-stats>
+    </div>
+</div>

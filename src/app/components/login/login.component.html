@@ -1,0 +1,35 @@
+
+
+
+<div class="alert alert-danger" id="saved" role="alert" style="display: none;width: 400px;">
+  {{errorMessage}}
+</div>
+<form [formGroup]="loginForm" (ngSubmit)="login()" class="border round" style="padding: 15px;"> 
+  <div class="form-row">
+    <h4>Σύνδεση</h4>
+  </div>
+  <div>
+    {{error}}
+  </div>
+  <div class="form-row" style="padding: 10px;">
+    <div class="form-group">
+      <label for="username">Όνομα Χρήστη</label>
+      <input type="text" class="form-control" id="username" formControlName="username"  placeholder="Όνομα Χρήστη" required>
+    </div>
+  </div>
+
+  <div class="form-row" style="padding: 10px;">
+    <div class="form-group">
+      <label for="password">Κωδικός</label>
+      <input type="password" class="form-control" id="password" formControlName="password" placeholder="Κωδικός" required>
+    </div>
+  </div>
+
+  <div class="form-row" style="padding: 10px;">
+    <button type="submit" [disabled]="!loginForm.valid" class="btn btn-primary">Σύνδεση</button>
+  </div>
+
+  
+
+
+</form>

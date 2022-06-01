@@ -1,0 +1,13 @@
+.row:nth-of-type(odd) div {
+  background-color: lightgrey;
+}
+.row:nth-of-type(even) div {
+  background: #ffffff;
+}
+.alert {
+   position: -webkit-sticky;
+  position: sticky; 
+  top: 20px;
+  z-index:9999
+} 
+

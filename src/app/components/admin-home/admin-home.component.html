@@ -1,0 +1,68 @@
+<!-- {{filtersState$|async|json}} -->
+
+
+<div class="row" style="margin-top: 15px;margin-bottom: 15px;">
+  <div class="col">
+    <h4 *ifRoles='["ROLE_ADMIN"]'>Ενεργοποιημένα ερωτηματολόγια</h4>
+    <h4 *ifRoles='["ROLE_TEACHER"]'>Ενεργοποιημένα ερωτηματολόγια σχετικά με εσάς</h4>
+  </div>
+  <div class="input-group col">
+    <input (change)="search($event)" type="text" class="form-control" placeholder="Αναζήτηση" aria-label="Anazitisi"
+      aria-describedby="basic-addon2">
+    <div class="input-group-append">
+
+      <i style="height: 100%;" class="input-group-text fa fa-search "></i>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="(filtersState$ | async) as filtersState" [ngSwitch]="filtersState.dataState">
+
+  <div *ngSwitchCase="DataState.LOADING">
+
+  </div>
+  <div *ngSwitchCase="DataState.LOADED">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Όνομα Ερωτηματολογίου</th>
+            <th scope="col">Τμήμα</th>
+            <th scope="col">Μάθημα</th>
+            <th scope="col">Καθηγητής</th>
+            <th scope="col">Έτος</th>
+            <th scope="col">Κατάσταση</th>
+            <th scope="col">Περισσότερα</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr *ngFor="let filter of filtersState.appData;let i = index">
+            <th scope="row">{{i+1}}</th>
+            <td>{{filter.questionnaireName}}</td>
+            <td>{{filter.decodedFilter.DEPARTMENT}}</td>
+            <td>{{filter.decodedFilter.SUBJECT}}</td>
+            <td>{{filter.decodedFilter.TEACHER}}</td>
+            <td>{{filter.decodedFilter.YEAR}}</td>
+            <td>
+              <div class="rounded-circle center" *ngIf="!filter.enabled"
+                style="background-color: red; height: 15px; width: 15px;"></div>
+
+              <div class="rounded-circle center" *ngIf="filter.enabled"
+                style="background-color: lightgreen; height: 15px; width: 15px;"></div>
+              <!-- {{filter.enabled}} -->
+            </td>
+            <td><a href="{{'/qresult?id='+ filter.questionnaireId+'&filter='+filter.filter}}" id="xd" class="link"><i
+                  class="fa fa-edit"></i></a></td>
+
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div *ngSwitchCase="DataState.ERROR">
+
+  </div>
+</div>

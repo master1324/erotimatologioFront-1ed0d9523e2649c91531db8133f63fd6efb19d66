@@ -1,0 +1,173 @@
+<!--
+<ng-container *ngFor="let dataObject of questionnaire.eligibleResponsesIdentifiers | keyvalue">
+    <p>This is the string key : {{ dataObject.key }}</p>
+
+    <div *ngFor="let object of dataObject.value">
+        Replace id/name with your params
+        {{object.id}} - {{object.name}}
+    </div>
+</ng-container>
+-->
+<div class="container">
+    <h3>{{questionnaire.name}}</h3>
+</div>
+
+<div class="container">
+
+    <div *ngFor="let identifier of questionnaireIdentifiers.eligibleResponsesIdentifiers | keyvalue;let i = index">
+
+        <label>{{identifier.key}}</label>
+
+        <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" [(ngModel)]="models[i]">
+            <option *ngFor="let object of identifier.value" [value]="object.id">{{object.name}}</option>
+        </select>
+
+    </div>
+    <button type="submit" class="btn btn-info" (click)="getFilter()">set identifiers</button>
+
+</div>
+
+<div class="container">
+
+    <!-- {{questionnaire|json}}-->
+
+    <form (ngSubmit)="save()" [appCounter]="0">
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            
+            <div *ngFor="let group of questionnaire.questionnaire;let k = index" class="accordion-item">
+                <!--ACOORDEON HEAD-->
+                <h4 class="accordion-header" id="{{'panelsStayOpen-heading'+k}}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        attr.data-bs-target="{{'#panelsStayOpen-collapse'+k}}" aria-expanded="true"
+                        attr.aria-controls="{{'panelsStayOpen-collapse'+k}}">
+                        {{group.name}}
+                    </button>
+                </h4>
+                <!--ACOORDEON BODY-->
+                <div id="{{'panelsStayOpen-collapse'+k}}" class="accordion-collapse collapse show"
+                    attr.aria-labelledby="{{'panelsStayOpen-heading'+k}}">
+
+                    <div class="accordion-body">
+                        <!--GRID HEADER-->
+                        <div *ngIf="group.eligibleResponses.length != 0" class="row">
+                            <div class="col-4 d-flex justify-content-xl-center align-items-xl-center"
+                                style="border:1px solid">
+                                <h4 style="margin-top: 8px;">Erotiseis</h4>
+                            </div>
+                            <div *ngFor="let eligibleResponse of group.eligibleResponses"
+                                class="col d-flex justify-content-md-center align-items-md-center"
+                                style="border:1px solid">
+                                <h5 class="text-truncate">{{eligibleResponse}}</h5>
+                            </div>
+                        </div>
+                        <!--GRID BODY-->
+                        <div *ngFor="let question of group.questions;let j = index" #counter="appCounter" appCounter
+                            class="row">
+                            <div *ngIf="question.eligibleResponses.length != 0" class="form-group d-flex"
+                                style="margin: 0px;padding: 0px;">
+                                <div class="col-4 d-flex justify-content-xl-center align-items-xl-center"
+                                    style="border:1px solid">
+                                    <h5 style="margin-top: 8px;" class="text-break">{{question.question}}</h5>
+                                </div>
+                                <div *ngFor="let eligibleResponse of question.eligibleResponses;let i = index"
+                                    class="col d-flex justify-content-md-center align-items-md-center"
+                                    style="border:1px solid">
+                                    <input [(ngModel)]="responses[counter.index].response" [value]="eligibleResponse"
+                                        class="form-check-input" type="radio" name="{{'response'+k+i+j}}"
+                                        id="{{'inlineRadio'+k+i+j}}">
+                                </div>
+                            </div>
+                            <!--AN I EROTISI EINAI TEXT-->
+                            <div *ngIf="question.eligibleResponses.length == 0" class="form-group">
+                                <h5>{{question.question}}</h5>
+                                <textarea [(ngModel)]="responses[counter.index].response" name="{{'response'+k+j}}"
+                                    class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Apothikeuste">
+        </div>
+        
+    </form>
+
+    
+
+    
+</div>
+<!-- 
+                <h4>{{group.name}}</h4>
+                <div class="d-flex">
+                <div *ngFor="let eligibleResponse of group.eligibleResponses">
+                    <h5>{{eligibleResponse}}</h5>
+                </div>
+            </div>
+            <div *ngFor="let question of group.questions;let j = index" #counter="appCounter" appCounter>
+                <div *ngIf="question.responseType != 'TEXT'" class="form-group d-flex">
+                    <h5>{{question.question}}</h5>
+                    <div *ngFor="let eligibleResponse of question.eligibleResponses;let i = index"
+                        class="form-check form-check-inline">
+
+                        <input [(ngModel)]="responses[counter.index].response" [value]="eligibleResponse"
+                            class="form-check-input" type="radio" name="{{'response'+k+i+j}}"
+                            id="{{'inlineRadio'+k+i+j}}">
+
+                        <label class="form-check-label" for="{{'inlineRadio'+k+i+j}}">{{eligibleResponse}}</label>
+
+                    </div>
+                </div>
+
+                <div *ngIf="question.eligibleResponses.length == 0" class="form-group">
+                    <h5>{{question.question}}</h5>
+                    <label for="exampleFormControlTextarea1">{{question.question}}</label>
+                    <textarea [(ngModel)]="responses[counter.index].response" name="{{'response'+k+j}}"
+                        class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+            </div> -->
+
+<!--  <div *ngFor="let group of questionnaire.questionnaire;let k = index">
+
+                <div class="container" style="padding: 15px;">
+                    <h2>{{group.name}}</h2>
+                    GRID HEADER
+                    <div *ngIf="group.eligibleResponses.length != 0" class="row">
+                        <div class="col-4 d-flex justify-content-xl-center align-items-xl-center" style="border:1px solid">
+                            <h3>Erotiseis</h3>
+                        </div>
+                        <div *ngFor="let eligibleResponse of group.eligibleResponses"
+                            class="col d-flex justify-content-md-center align-items-md-center" style="border:1px solid">
+                            <h5 class="text-truncate">{{eligibleResponse}}</h5>
+                        </div>
+                    </div>
+                   GRID BODY
+                    <div *ngFor="let question of group.questions;let j = index" #counter="appCounter" appCounter
+                        class="row">
+                        <div *ngIf="question.eligibleResponses.length != 0" class="form-group d-flex"
+                            style="margin: 0px;padding: 0px;">
+                            <div class="col-4 d-flex justify-content-xl-center align-items-xl-center"
+                                style="border:1px solid">
+                                <h4 class="text-break">{{question.question}}</h4>
+                            </div>
+                            <div *ngFor="let eligibleResponse of question.eligibleResponses;let i = index"
+                                class="col d-flex justify-content-md-center align-items-md-center" style="border:1px solid">
+                                <input [(ngModel)]="responses[counter.index].response" [value]="eligibleResponse"
+                                    class="form-check-input" type="radio" name="{{'response'+k+i+j}}"
+                                    id="{{'inlineRadio'+k+i+j}}">
+                            </div>
+                        </div>
+                        AN I EROTISI EINAI TEXT
+                        <div *ngIf="question.eligibleResponses.length == 0" class="form-group">
+                            <h5>{{question.question}}</h5>
+                            <label for="exampleFormControlTextarea1">{{question.question}}</label>
+                            <textarea [(ngModel)]="responses[counter.index].response" name="{{'response'+k+j}}"
+                                class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+    
+            </div> -->

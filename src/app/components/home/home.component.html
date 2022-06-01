@@ -1,0 +1,93 @@
+<div *ngIf="(appState$ | async) as appState" [ngSwitch]="appState.dataState" class="container border-bottom"
+    style="padding-bottom: 20px;">
+
+    <div *ngSwitchCase="DataState.LOADING">
+        <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+
+    <div *ngSwitchCase="DataState.LOADED">
+
+        <div>
+
+            <div class="d-flex border-bottom" style="margin-top: 15px;margin-bottom: 15px;">
+                <h4 *ifRoles='["ROLE_USER"]' class="text-center "> Επιλέξτε ερωτηματολόγιο για να συμπληρώσετε </h4>
+                <h4 *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]'>Επιλέξτε ερωτηματολόγιο για ενεργοποίηση</h4>
+            </div>
+            <!-- <div class="row filtr-container">
+                <div *ngFor="let questionnaire of appState.appData" class="col-md-6 col-lg-4"  style="padding: 25px;">
+
+                    <div  class="card border-dark">
+                        <div class="card-header bg-dark text-light">
+                            <h5 class="m-0">{{questionnaire.name}}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{questionnaire.shortDescription}}</p>
+                        </div>
+                        <div *ngIf="(isUser$|async)" class="d-flex card-footer">
+                            <a href="{{'/quest?id='+questionnaire.id}}" class="btn btn-primary stretched-link">Go somewhere</a>
+                        </div>
+                        <div *ngIf="(isAdmin$|async)" class="d-flex card-footer">
+                            <a href="{{'/qresult?id='+questionnaire.id}}" class="btn btn-primary stretched-link">See Results</a>
+                        </div>
+                    </div>
+
+                </div> 
+            </div> -->
+
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                <div *ngFor="let questionnaire of appState.appData">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{questionnaire.name}}</h5>
+
+
+                                <div class="">
+
+                                    <p>{{questionnaire.shortDescription}}</p>
+                                </div>
+
+
+                                <div *ifRoles='["ROLE_USER"]' class="d-flex">
+                                    <a href="{{'/quest?id='+questionnaire.id}}" class=" stretched-link"></a>
+                                </div>
+                                <div *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]' class="d-flex">
+                                    <a href="{{'/qresult?id='+questionnaire.id}}" class="stretched-link"></a>
+                                </div>
+
+                                <!-- <a href="{{'/quest?id='+qResponse.questionnaireId+'&&filter='+qResponse.filter}}" class="stretched-link"></a> -->
+
+                            </div>
+                            
+                        </div>
+                        <!-- <div class="card-footer d-flex justify-content-end">
+                            <button type="button" class="btn btn-labeled btn-primary" style="margin-right:10px">
+                                <span class="btn-label"><i class="fa fa-eye"></i></span></button>
+                            <button type="button" class="btn btn-labeled btn-primary">
+                                <span class="btn-label"><i class="fa fa-edit"></i></span></button>
+                        </div> -->
+                        <div class="card-footer d-flex justify-content-end">
+                            <div *ifRoles='["ROLE_USER","ROLE_TEACHER"]' class="d-flex">
+                                <a href="{{'/quest?id='+questionnaire.id}}" class="btn btn-primary"><span class="btn-label" ><i class="fa fa-arrow-circle-o-right"></i></span> </a>
+                            </div>
+                            <div *ifRoles='["ROLE_ADMIN"]' class="d-flex">
+                                <a href="{{'/qresult?id='+questionnaire.id}}" class="btn btn-primary" style="margin-right: 10px;"><span class="btn-label" ><i class="fa fa-eye"></i></span> </a>
+                                <a href="{{'/qedit?id='+questionnaire.id}}" class="btn btn-primary"><span class="btn-label"><i class="fa fa-edit"></i></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div *ngSwitchCase="DataState.ERROR">
+
+    </div>
+</div>
+<admin-home *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]'></admin-home>
+<app-see-responses *ifRoles='["ROLE_USER"]'> </app-see-responses>

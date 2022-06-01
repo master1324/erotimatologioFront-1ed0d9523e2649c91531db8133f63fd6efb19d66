@@ -1,0 +1,90 @@
+<div class="alert alert-danger" id="saved" role="alert" style="display: none;width: 400px;" >
+    {{errorMessage}}
+</div>
+
+<div *ngIf="(userState$ | async) as userState" [ngSwitch]="userState.dataState">
+    <div *ngSwitchCase="DataState.LOADING">
+        <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <div *ngSwitchCase="DataState.LOADED">
+        <form [formGroup]="updateForm" (ngSubmit)="onSubmit()" class="border round" style="padding: 15px;">
+            <h4>Διαχείριση Λογαριασμού</h4>
+            <!-- USERNAME -->
+            <div class="form-row" style="padding: 10px;">
+                <div class="form-group">
+                    <label for="username">Όνομα Χρήστη</label>
+                    <input type="text" class="form-control" id="username" formControlName="username" placeholder="Όνομα Χρήστη"
+                        aria-describedby="username">
+                    <div id="username">
+        
+                    </div>
+                </div>
+            </div>
+        
+            <!-- OLD PASSWORD -->
+            <div class="form-row" style="padding: 10px;">
+                <div class="form-group">
+                    <label for="oldpass">Ενεργός Κωδικός</label>
+                    <input type="text" class="form-control" id="oldpass" formControlName="oldPassword" placeholder="Ενεργός Κωδικός"
+                        aria-describedby="username">
+                    <div id="username">
+        
+                    </div>
+                </div>
+            </div>
+        
+            <!-- PASSWORDS -->
+            <div formGroupName="passwords" class="form-row">
+                <div class="form-row" style="padding: 10px;">
+                    <div class="form-group">
+                        <label for="password">Καινούργιος Κωδικός</label>
+                        <input type="password" class="form-control" id="password" formControlName="password"
+                            placeholder="Καινούργιος Κωδικός">
+                    </div>
+                </div>
+        
+                <div class="form-row" style="padding: 10px;">
+                    <div class="form-group">
+                        <label for="passwordConfirm">Επιβεβαίωση καινούργιου κωδικού</label>
+                        <input type="password" id="passwordConfirm" formControlName="passwordConfirm"
+                            placeholder="Επιβεβαίωση καινούργιου κωδικού" aria-describedby="dontmatch" id="dontmatch"
+                            [ngClass]="updateForm.hasError('notSame', 'passwords') && (updateForm.get('passwords.passwordConfirm').dirty) && (updateForm.get('passwords.passwordConfirm').value != '')? 'form-control is-invalid':'form-control '">
+                        <div id="dontmatch" class="invalid-feedback"
+                            *ngIf="updateForm.hasError('notSame', 'passwords') && (updateForm.get('passwords.passwordConfirm').dirty) && (updateForm.get('passwords.passwordConfirm').value != '')">
+                            Οι κωδικοί δεν ταιριάζουν
+                        </div>
+                    </div>
+                </div>
+        
+        
+            </div>
+        
+        
+            <!-- EMAIL -->
+            <div class="form-row" style="padding: 10px;">
+                <div class="form-group">
+                    <label for="email">Εmail</label>
+                    <input type="email" id="email" formControlName="email" aria-describedby="email"
+                        placeholder="pXXXXX@unipi.gr"
+                        [ngClass]="(updateForm.controls['email'].errors != null) && (updateForm.controls['email'].value != '') && (updateForm.controls['email'].dirty)?'form-control is-invalid ':'form-control  '">
+        
+                    <div *ngIf="updateForm.controls['email'].errors != null && updateForm.controls['email'].value != '' && updateForm.controls['email'].dirty"
+                        id="email" class="invalid-feedback">
+                        Μη συμβατό email
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-row" style="padding: 10px;">
+                <button type="submit" [disabled]="!updateForm.valid" class="btn btn-primary">Ενημέρωση Στοιχείων</button>
+            </div>
+        
+        </form>
+    </div>
+    <div *ngSwitchCase="DataState.ERROR">
+        ERROR
+    </div>
+</div>
+

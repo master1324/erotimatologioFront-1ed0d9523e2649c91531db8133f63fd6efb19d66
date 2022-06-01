@@ -1,0 +1,218 @@
+
+<div class="ident-pdf">
+
+
+<div *ngIf="!filterIsPresent &&(qIdentifierState$ | async) as identifiersState" [ngSwitch]="identifiersState.dataState"
+    style="margin: 15px;">
+
+    <!--LOADING-->
+    <div *ngSwitchCase="DataState.LOADING" class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <!--LOADED-->
+    <div *ngSwitchCase="DataState.LOADED">
+
+        <h3>{{identifiersState.appData.name}}</h3>
+        <div class="accordion" id="accordionIdentifiers">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Αναγνωριστικά
+                    </button>
+                </h2>
+
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionIdentifiers">
+                    <div class="accordion-body">
+
+                        <form *ngIf="!filterIsPresent" #identifierForm="ngForm" (ngSubmit)="setFilter(identifierForm)">
+
+                            <div style="max-height: 250px;margin-left: 0px;padding-left: 0px;"
+                                class="container d-flex flex-column flex-wrap  align-items-xl-start justify-content-between">
+                                <!-- GIA KATHE EIDOS IDENTIFIER -->
+                                <div style="width: 20vw;flex-basis: 50%;"
+                                    *ngFor="let identifier of identifiersState.appData.eligibleResponsesIdentifiers | keyvalue;let i = index">
+
+                                    <label style="margin-bottom: 5px;">{{IdentifierType[identifier.key]}}</label>
+
+                                    <select class="form-select  " name="{{'select'+i}}" required
+                                        aria-label=".form-select-lg example" ngModel>
+
+                                        <option *ngFor="let object of identifier.value;let j = index"
+                                            value="{{object.id}}">
+                                            {{object.name}}</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <!-- ENABLED AND DURATION -->
+                            <div *ifRoles='["ROLE_ADMIN","ROLES_TEACHER"]' class="border-top pdf-ignore"
+                                style="margin-top: 15px;margin-bottom: 15px;padding-top: 15px;">
+
+                                    <div class="row">
+                                        <!-- <div class="col">Energo</div> -->
+                                        <div class="col">Ενεργό Μέχρι</div>
+                                        
+                                    </div>
+                                    <div class="row">
+
+                                        <!-- <div class="col">
+                                            <label class="switch"><input (change)="checkValue(enabled?'1':'0')" type="checkbox" [(ngModel)]="enabled" [ngModelOptions]="{standalone: true}">
+                                                <span
+                                                    class="slider round"></span></label>
+                                        </div> -->
+
+                                        <div class="col">
+                                            <input type="datetime-local" class="form-control" placeholder="Hmeres" min="0"  [(ngModel)]="datetimelocal" [ngModelOptions]="{standalone: true}">
+                                        </div>
+                                    </div>
+                            </div>
+
+
+
+                            <div *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]' style="margin-top: 10px;"
+                                class="col d-flex flex-column justify-content-xl-center align-items-xl-start pdf-ignore">
+                                <input type="submit" value="Ενεργοποίηση Ερωτηματολογίου" class="btn btn-primary"
+                                    [disabled]="identifierForm.invalid">
+                            </div>
+
+                            <div *ifRoles='["ROLE_USER"]' style="margin-top: 10px;"
+                                class="col d-flex flex-column justify-content-xl-center align-items-xl-start">
+                                <input (click)="setFilterUser(identifierForm)" type="button" value="Επιλογή Αναγνωριστικών" class="btn btn-primary"
+                                    [disabled]="identifierForm.invalid">
+                            </div>
+
+                        </form>
+                        <!-- COPY URL  -->
+                        <div *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]' style="margin-top: 25px;" class="pdf-ignore">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Σύνδεσμος Ερωτηματολογίου"
+                                    aria-label="Link Errotimatologiou" aria-describedby="basic-addon2"
+                                    [(ngModel)]="link">
+                                <div class="input-group-append">
+                                    <button [cdkCopyToClipboard]="link" class="btn btn-outline-secondary"
+                                        type="button">Αντιγραφή Συνδέσμου</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!--ERROR-->
+    <div *ngSwitchCase="DataState.ERROR">
+        ERROR
+        
+    </div>
+
+</div>
+
+<div *ngIf="filterIsPresent && (decodedFilter$ | async) as filterState" [ngSwitch]="filterState.dataState"
+    style="margin: 15px;">
+
+    <!--LOADING-->
+    <div *ngSwitchCase="DataState.LOADING" class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <!--LOADED-->
+    <div *ngSwitchCase="DataState.LOADED">
+
+        <!-- <h3>{{identifiersState.appData.name}}</h3> -->
+        <div class="accordion" id="accordionIdentifiers">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        Αναγνωριστικά
+                    </button>
+                </h2>
+
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                    data-bs-parent="#accordionIdentifiers">
+                    <div class="accordion-body">
+
+                        <ul class="list-group list-group">
+                            <li *ngFor="let identifier of filterState.appData | keyvalue;let i = index"
+                                class="list-group-item">
+                                <div class="row">
+                                    <span class="col border-right">{{IdentifierType[identifier.key]}}</span>
+                                    <span class="col-10">{{identifier.value}}</span>
+                                </div>
+                            </li>
+
+                        </ul>
+                        <!-- Enalbed And duration -->
+                        <!-- <div *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]' class="border-top"
+                                style="margin-top: 15px;margin-bottom: 15px;padding-top: 15px;">
+
+                                    <div class="row">
+                                        <div class="col">Energo</div>
+                                        <div class="col">Hmeres</div>
+                                        <div class="col">Ores</div>
+                                        <div class="col">Lepta</div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col">
+                                            <label class="switch"><input (change)="checkValue(enabled?'1':'0')" type="checkbox" [(ngModel)]="enabled" [ngModelOptions]="{standalone: true}">
+                                                <span
+                                                    class="slider round"></span></label>
+                                        </div>
+
+                                        <div class="col">
+                                            <input type="number" class="form-control" placeholder="Hmeres" min="0"  [(ngModel)]="days" [ngModelOptions]="{standalone: true}">
+                                        </div>
+                                        <div class="col">
+                                            <input type="number" class="form-control" placeholder="Ores" min="0" [(ngModel)]="hours" [ngModelOptions]="{standalone: true}">
+                                        </div>
+                                        <div class="col">
+                                            <input type="number" class="form-control" placeholder="Lepta" min="0" [(ngModel)]="minutes" [ngModelOptions]="{standalone: true}">
+                                        </div>
+
+                                    </div>
+                            </div> -->
+                        <!-- COPY URL  -->
+                        <div *ifRoles='["ROLE_ADMIN","ROLE_TEACHER"]' style="margin-top: 25px;" class="pdf-ignore">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Σύνδεσμος Ερωτηματολογίου"
+                                    aria-label="Link Errotimatologiou" aria-describedby="basic-addon2"
+                                    [(ngModel)]="link">
+                                <div class="input-group-append">
+                                    <button [cdkCopyToClipboard]="link" class="btn btn-outline-secondary"
+                                        type="button">Αντιγραφή Συνδέσμου</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div *ifRoles='["ROLE_USER"]' style="margin-top: 10px;"
+                            class="col d-flex flex-column justify-content-xl-center align-items-xl-start">
+                            <a href="{{'http://localhost:4200/quest?id='+questionnaireId}}" class="btn btn-primary"
+                                role="button">Απαντήστε σε ερωτηματολόγιο της επιλογής σας</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--ERROR-->
+    <div *ngSwitchCase="DataState.ERROR">
+        ERROR
+    </div>
+
+</div>
+</div>

@@ -1,0 +1,354 @@
+<!-- TITLE SEARCH ADD TEACHER -->
+<div class="row" style="margin-top:25px">
+
+    <h4 class="col">Καθηγητές</h4>
+
+    <div class="input-group col">
+        <input (change)="search($event)" type="text" class="form-control" placeholder="Αναζήτηση" aria-label="Anazitisi"
+            aria-describedby="basic-addon2">
+        <div class="input-group-append">
+
+            <i style="height: 100%;" class="input-group-text fa fa-search "></i>
+        </div>
+    </div>
+    <div class="col d-flex justify-content-end ">
+        <button class="btn btn-primary float-right" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Δημιουργία καθηγητή</button>
+    </div>
+
+
+</div>
+
+<!-- Modal Add Teacher-->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Προσθήκη καθηγητή</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form [formGroup]="addTeacherForm" (ngSubmit)="onAddTeacherSubmit()">
+
+
+                    <div class="mb-3">
+                        <label for="Onomateponimo" class="form-label">Ονοματεπώνυμο</label>
+                        <input formControlName="name" type="text" class="form-control" id="Onomateponimo"
+                            aria-describedby="emailHelp">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Username" class="form-label">Όνομα Χρήστη</label>
+                        <input formControlName="username" type="text" class="form-control" id="Username"
+                            aria-describedby="emailHelp">
+                        <small id="emailHelp" class="form-text text-muted">Ο κωδικός και το όνομα χρήστη θα σταλθούν αυτόματα στο email του καθηγητή</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Email</label>
+                        <input formControlName="email" type="email" class="form-control" id="exampleInputEmail1"
+                            aria-describedby="emailHelp">
+                    </div>
+
+
+
+                    <!--Subjects-->
+                    <h5>Μαθήματα</h5>
+                    <div formArrayName="subjects" class="border rounded" style="padding: 15px;margin-bottom: 15px;">
+
+                        <div class="input-group mb-3">
+
+                            <select (change)="onSelectSubjectChange($event)" class="form-select"
+                                id="inputGroupSelect02">
+                                <option value="-1" selected>Επιλέξτε μάθημα</option>
+
+                                <option *ngFor="let subject of subjectsArray;let idIndex=index" value="{{idIndex}}">
+                                    {{subject.name}}</option>
+
+                            </select>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button" (click)="addSubects()">Προσθήκη</button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex" style="margin-top: 15px;">
+                            <div id="identifiersSelected" class="d-flex border rounded"
+                                *ngFor="let subjectSelected of subjects().controls; let idIndex=index"
+                                style="padding: 5px;">
+
+                                <div style="margin-right: 5px;">
+                                    <!-- {{identifierKeys()[subject.value]}} -->
+                                    {{subjectsArray[subjectSelected.value].name}}
+                                </div>
+
+                                <!--REMOVE IDENTIFIER-->
+                                <button type="button" class="btn-close" aria-label="Close"
+                                    (click)="removeSubject(subjectSelected.value)"></button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!--Departments-->
+                    <h5>Τμήματα</h5>
+                    <div formArrayName="departments" class="border rounded" style="padding: 15px;margin-bottom: 15px;">
+
+                        <div class="input-group mb-3">
+
+                            <select (change)="onSelectDepartmentChange($event)" class="form-select"
+                                id="inputGroupSelect02">
+                                <option value="-1" selected>Επιλέξτε τμήμα</option>
+
+                                <option *ngFor="let department of departmentsArray;let ikIndex=index"
+                                    value="{{ikIndex}}">
+                                    {{department.name}}</option>
+
+                            </select>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button"
+                                    (click)="addDepartments()">Προσθήκη</button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex" style="margin-top: 15px;">
+                            <div id="identifiersSelected" class="d-flex border rounded"
+                                *ngFor="let departmentSelected of departments().controls; let idIndex=index"
+                                style="padding: 5px;">
+
+                                <div style="margin-right: 5px;">
+                                    {{departmentsArray[departmentSelected.value].name}}
+                                </div>
+
+                                <!--REMOVE IDENTIFIER-->
+                                <button type="button" class="btn-close" aria-label="Close"
+                                    (click)="removeDepartment(departmentSelected.value)"></button>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Έξοδος</button>
+                        <!-- <button type="submit" class="btn btn-primary">Dimiourgia</button> -->
+
+                        <button type="submit" class="btn btn-primary"
+                            [disabled]="addTeacherForm.invalid ||(isLoading$|async)">
+                            <!-- <i  class="fas fa-spinner fa-spin"> Saving </i> -->
+                            <div *ngIf="isLoading$|async" class="spinner-border" role="status">
+                                <span class="sr-only">Αποθήκευση..</span>
+                            </div>
+                            <span *ngIf="!(isLoading$|async)">Προσθήκη καθηγητή</span>
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- UPDATE MODAL -->
+<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Ενημέρωση στοιχείων καθηγητή</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="(teacherState$ | async) as teachersState" [ngSwitch]="teachersState.dataState"
+                    style="padding-bottom: 20px;">
+                    <div *ngSwitchCase="DataState.LOADING">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                    <div *ngSwitchCase="DataState.LOADED">
+                        <form [formGroup]="updateTeacherForm" (ngSubmit)="onUpdateTeacherSubmit()">
+
+                            <div class="mb-3">
+                                <label for="Onomateponimo" class="form-label">Ονοματεπώνυμο</label>
+                                <input formControlName="name" type="text" class="form-control" id="Onomateponimo"
+                                    aria-describedby="emailHelp">
+                            </div>
+
+                            <!--Subjects-->
+                            <h5>Μαθήματα</h5>
+                            <div formArrayName="subjects" class="border rounded"
+                                style="padding: 15px;margin-bottom: 15px;">
+
+                                <div class="input-group mb-3">
+
+                                    <select (change)="onSelectSubjectChange2($event)" class="form-select"
+                                        id="inputGroupSelect03">
+                                        <option value="-1" selected>Επιλέξτε μάθημα</option>
+
+                                        <option *ngFor="let subject of subjectsArray;let idIndex=index"
+                                            value="{{idIndex}}">
+                                            {{subject.name}}</option>
+
+                                    </select>
+
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button"
+                                            (click)="addSubects2()">Προσθήκη</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex" style="margin-top: 15px;">
+                                    <div id="identifiersSelected" class="d-flex border rounded"
+                                        *ngFor="let subjectSelected of subjects2().controls; let idIndex=index"
+                                        style="padding: 5px;">
+                                        <div style="margin-right: 5px;">
+                                            <!-- {{identifierKeys()[subject.value]}} -->
+                                            {{subjectsArray[subjectSelected.value].name}}
+                                        </div>
+
+                                        <!--REMOVE IDENTIFIER-->
+                                        <button type="button" class="btn-close" aria-label="Close"
+                                            (click)="removeSubject2(subjectSelected.value)"></button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!--Departments-->
+                            <h5>Τμήματα</h5>
+                            <div formArrayName="departments" class="border rounded"
+                                style="padding: 15px;margin-bottom: 15px;">
+
+                                <div class="input-group mb-3">
+
+                                    <select (change)="onSelectDepartmentChange2($event)" class="form-select"
+                                        id="inputGroupSelect02">
+                                        <option value="-1" selected>Επιλέξτε τμήμα</option>
+
+                                        <option *ngFor="let department of departmentsArray;let ikIndex=index"
+                                            value="{{ikIndex}}">
+                                            {{department.name}}</option>
+
+                                    </select>
+
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button"
+                                            (click)="addDepartments2()">Προσθήκη</button>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex" style="margin-top: 15px;">
+                                    <div id="identifiersSelected" class="d-flex border rounded"
+                                        *ngFor="let departmentSelected of departments2().controls; let idIndex=index"
+                                        style="padding: 5px;">
+
+                                        <div style="margin-right: 5px;">
+                                            {{departmentsArray[departmentSelected.value].name}}
+                                        </div>
+
+                                        <!--REMOVE IDENTIFIER-->
+                                        <button type="button" class="btn-close" aria-label="Close"
+                                            (click)="removeDepartment2(departmentSelected.value)"></button>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Έξοδος</button>
+                                <!-- <button type="submit" class="btn btn-primary">Dimiourgia</button> -->
+
+                                <button type="submit" class="btn btn-primary"
+                                    [disabled]="updateTeacherForm.invalid ||(isLoading$|async)">
+                                    <!-- <i  class="fas fa-spinner fa-spin"> Saving </i> -->
+                                    <div *ngIf="isLoading$|async" class="spinner-border" role="status">
+                                        <span class="sr-only">Αποθήκευση..</span>
+                                    </div>
+                                    <span *ngIf="!(isLoading$|async)">Αποθήκευση αλλαγών</span>
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div *ngSwitchCase="DataState.ERROR">
+                        ERROR
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="(teachersState$ | async) as teachersState" [ngSwitch]="teachersState.dataState"
+    style="padding-bottom: 20px;">
+    <div *ngSwitchCase="DataState.LOADING">
+        <div class="spinner-border" role="status">
+            <span class="sr-only"></span>
+        </div>
+    </div>
+    <div *ngSwitchCase="DataState.LOADED">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Ονοματεπώνυμο</th>
+                    <th scope="col">Μαθήματα</th>
+                    <th scope="col">Τμήματα</th>
+                    <th scope="col text-right"> Επεξεργασία/Διαγραφή </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- KATHIGITES -->
+                <ng-container *ngFor="let teacher of teachersState.appData.data.teachers;let i = index">
+                    <tr>
+                        <th scope="row">{{i+1}}</th>
+                        <td>{{teacher.name}}</td>
+
+                        <td>
+                            <div *ngFor="let subject of teacher.subjects;let i = index">
+                                <span>{{subject.name}}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div *ngFor="let department of teacher.departments;let i = index">
+                                <span>{{department.name}}</span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <button (click)="loadTeacher(teacher.id)" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop2"
+                                style="padding-top:1px; padding-bottom: 1px;padding-left: 10px;padding-right: 10px; "><i
+                                    class="fa fa-sign-in"></i></button>
+
+                            <button (click)="deleteTeacher(teacher.id)" class="btn btn-danger"
+                                style="padding-top:1px; padding-bottom: 1px;padding-left: 10px;padding-right: 10px;margin-left: 10px; "><i
+                                    class="fa fa-remove"></i></button>
+                        </td>
+                    </tr>
+                </ng-container>
+
+
+            </tbody>
+        </table>
+
+
+
+
+    </div>
+    <div *ngSwitchCase="DataState.ERROR">
+        ERROR
+    </div>
+</div>

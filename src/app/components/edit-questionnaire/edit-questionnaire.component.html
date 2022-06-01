@@ -1,0 +1,167 @@
+<div class="container" style="position: relative;">
+    
+    
+
+    <div *ngIf="(appState$ | async) as appState" [ngSwitch]="appState.dataState" style="position: absolute;top:10px;width: 100%;">
+        <div *ngSwitchCase="DataState.LOADING">
+            <div class="spinner-border" role="status">
+                <span class="sr-only"></span>
+            </div>
+        </div>
+        <div *ngSwitchCase="DataState.LOADED">
+            <form [formGroup]="questionnaireForm" (ngSubmit)="onSubmit()">
+
+                <input type="hidden" formControlName="id">
+                <input type="hidden" formControlName="identifiers">
+
+                <h4 style="margin-top: 15px;">Όνομα Ερωτηματολογίου</h4>
+                <div class="border rounded" style="margin-bottom: 15px;padding: 15px;">
+                    <input formControlName="name" id="erName" class="form-control" type="text"
+                        placeholder="Όνομα Ερωτηματολογίου">
+                </div>
+
+                <h4 style="margin-top: 15px;">Σύντομη Περιγραφή</h4>
+                <div class="border rounded" style="margin-bottom: 15px;padding: 15px;">
+                    <textarea class="form-control" formControlName="shortDescription" id="shortDescreption" rows="3"
+                        placeholder="Σύντομη Περιγραφή"></textarea>
+                </div>
+
+                <h4 style="margin-top: 15px;">Κατάσταση/Επιλογές</h4>
+                <div class="border rounded d-flex justify-content-between" style="margin-bottom: 15px;padding: 15px;">
+
+
+
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" formControlName="enabled">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+
+                    <div>
+
+                        <button (click)="onDeleteQuestionnaire()" type="button" class="btn btn-labeled btn-danger">
+                            <span class="btn-label"><i class="fa fa-remove"></i></span></button>
+
+                        <button type="submit" class="btn btn-labeled btn-primary" style="margin-left: 10px;" [disabled]="questionnaireForm.invalid ||(isLoading$|async)">
+                            <div *ngIf="isLoading$|async" class="spinner-border" role="status">
+                                <span class="sr-only">Αποθήκευση..</span>
+                            </div>
+                            <span *ngIf="!(isLoading$|async)" class="btn-label"><i class="fa fa-save"></i></span>
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+                <!--GUESTION GROUPS-->
+                <div formArrayName="questionnaire">
+                    <h4>Ομάδες Ερωτήσεων</h4>
+                    <!--LOOP OVER GROUPS-->
+                    <div *ngFor="let group of questionGroups().controls; let groupIndex=index"
+                        style="margin-bottom: 15px;">
+
+                        <div [formGroupName]="groupIndex" class="border rounded" style="padding: 10px;">
+                            <input type="hidden" formControlName="id">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="{{'name'+groupIndex}}">Όνομα ομάδας</label>
+                                    <input class="form-control" id="{{'name'+groupIndex}}" type="text"
+                                        formControlName="name" placeholder="Όνομα ομάδας">
+                                </div>
+                                <div *ngIf="this.questionGroups().at(groupIndex).value['responseType'] ==undefined" class="col">
+                                    <label for="{{'responseType'+groupIndex}}">Τύπος αποδεκτών απαντήσεων</label>
+                                    <select class="form-select" id="{{'responseType'+groupIndex}}"
+                                        formControlName="responseType">
+                                        <option *ngFor="let responseType of responseTypeValues();let idIndex=index"
+                                            value="{{idIndex}}">{{responseType}}</option>
+                                    </select>
+        
+                                </div>
+                                <div class="col" *ngIf="this.questionGroups().at(groupIndex).value['responseType'] !=undefined">
+                                    <label for="{{'responseType'+groupIndex}}">Τύπος αποδεκτών απαντήσεων</label>
+                                    <!-- {{this.questionGroups().at(groupIndex).value['responseType']}} -->
+                                    <select class="form-select" id="{{'responseType'+groupIndex}}"
+                                        >
+                                        <option  selected disabled>{{this.questionGroups().at(groupIndex).value['responseType']}}</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <div class="d-flex justify-content-end">
+                                        <button (click)="removeQuestionGroup(groupIndex)" class="btn-close"
+                                            aria-label="Close"></button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!--EROTISEIS KATHE GROUP-->
+                            <div formArrayName="questions">
+                                <h4>Ερωτήσεις</h4>
+                                <!--LOOP OVER QUESTIONS-->
+                                <div *ngFor="let question of questions(groupIndex).controls; let qIndex=index">
+
+                                    <div [formGroupName]="qIndex">
+                                        <input type="hidden" formControlName="id">
+
+                                        <div class="d-flex" style="margin-bottom: 15px;">
+                                            <input class="form-control" type="text" formControlName="question"
+                                                placeholder="Ερώτηση">
+                                            <!--REMOVE QUESTION-->
+                                            <button (click)="removeQuestion(groupIndex,qIndex)" class="btn-close"
+                                                aria-label="Close" style="height:inherit;"></button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                <!--ADD QUESTION-->
+                                <button class="btn btn-primary" type="button" (click)="addQuestion(groupIndex)">Προσθήκη
+                                    ερώτησης<i class="fa fa-plus" style="margin-left: 5px;"></i></button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!--ADD GROUP-->
+                    <button class="btn btn-primary" type="button" (click)="addQuestionGroup()"
+                        style="margin-left: 5px;">Προσθήκη Ομάδας Ερωτήσεων<i class="fa fa-plus"
+                            style="margin-left:5px;"></i></button>
+
+                </div>
+
+
+                <div class="d-flex justify-content-center">
+                    <!-- <input class="btn btn-primary" type="submit"  value="Apothikeusi"> -->
+
+                    <button type="submit" class="btn btn-primary"
+                        [disabled]="questionnaireForm.invalid ||(isLoading$|async)">
+                        <!-- <i  class="fas fa-spinner fa-spin"> Saving </i> -->
+                        <div *ngIf="isLoading$|async" class="spinner-border" role="status">
+                            <span class="sr-only">Αποθήκευση..</span>
+                        </div>
+                        <span *ngIf="!(isLoading$|async)">Αποθήκευση Αλλαγών</span>
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+        <div *ngSwitchCase="DataState.ERROR">
+            ERROR
+        </div>
+    </div>
+
+    <div class="alert alert-success" id="saved" role="alert" style="display: none;">
+        <span id="successMessage"></span>
+    </div>
+    
+    <div class="alert alert-danger" id="error" role="alert" style="display: none;">
+        <span id="errorMessage"></span>
+    </div>
+
+</div>

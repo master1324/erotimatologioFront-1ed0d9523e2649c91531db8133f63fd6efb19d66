@@ -1,0 +1,129 @@
+<div class="container">
+
+
+    <form [formGroup]="questionnaireForm" (ngSubmit)="onSubmit()">
+
+        <h3 style="margin-top: 15px;">Όνομα Ερωτηματολογίου</h3>
+        <div class="border rounded" style="margin-bottom: 15px;padding: 15px;">
+            <input formControlName="name" id="erName" class="form-control" type="text"
+                placeholder="Όνομα Ερωτηματολογίου">
+        </div>
+
+        <h3 style="margin-top: 15px;">Σύντομη Περιγραφή</h3>
+        <div class="border rounded" style="margin-bottom: 15px;padding: 15px;">
+            <textarea class="form-control" formControlName="shortDescription" id="shortDescreption" rows="3"
+                placeholder="Σύντομη Περιγραφή"></textarea>
+        </div>
+
+
+        <!--IDENTIFIERS-->
+        <h3>Αναγνωριστικά</h3>
+        <div formArrayName="identifiers" class="border rounded" style="padding: 15px;margin-bottom: 15px;">
+
+            <div class="input-group mb-3">
+
+                <select (change)="onSelectChange($event)" class="form-select" id="inputGroupSelect02">
+                    <option value="-1" selected>Επιλέξτε Αναγνωριστικό</option>
+                    <option *ngFor="let identifierType of identifierValues();let idIndex=index" value="{{idIndex}}">
+                        {{identifierType}}</option>
+                </select>
+
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" (click)="addIdentifier()">Προσθήκη
+                        Αναγνωριστικού</button>
+                </div>
+            </div>
+            <div class="d-flex" style="margin-top: 15px;">
+                <div id="identifiersSelected" class="d-flex border rounded"
+                    *ngFor="let identifier of identifiers().controls; let idIndex=index" style="padding: 5px;">
+                    <div style="margin-right: 5px;">
+                        {{identifierValues()[identifier.value]}}
+                    </div>
+                    <!--REMOVE IDENTIFIER-->
+                    <button type="button" class="btn-close" aria-label="Close"
+                        (click)="removeIdentifier(identifier.value)"></button>
+                </div>
+            </div>
+        </div>
+
+        <!--GUESTION GROUPS-->
+        <div formArrayName="questionnaire">
+            <h3>Ομάδες Ερωτήσεων</h3>
+            <!--LOOP OVER GROUPS-->
+            <div *ngFor="let group of questionGroups().controls; let groupIndex=index" style="margin-bottom: 15px;">
+
+                <div [formGroupName]="groupIndex" class="border rounded" style="padding: 10px;">
+
+                    <div class="row">
+                        <div class="col">
+                            <label for="{{'name'+groupIndex}}">Όνομα ομάδας</label>
+                            <input class="form-control" id="{{'name'+groupIndex}}" type="text" formControlName="name"
+                                placeholder="Όνομα ομάδας">
+                        </div>
+                        <div class="col">
+                            <label for="{{'responseType'+groupIndex}}">Τύπος αποδεκτών απαντήσεων</label>
+                            <select class="form-select" id="{{'responseType'+groupIndex}}"
+                                formControlName="responseType">
+                                <option *ngFor="let responseType of responseTypeValues();let idIndex=index"
+                                    value="{{idIndex}}">{{responseType}}</option>
+                            </select>
+
+                        </div>
+                        <div class="col">
+                            <div class="d-flex justify-content-end">
+                                <button (click)="removeQuestionGroup(groupIndex)" class="btn-close"
+                                    aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!--EROTISEIS KATHE GROUP-->
+                    <div formArrayName="questions" >
+                        <h3>Ερωτήσεις</h3>
+                        <!--LOOP OVER QUESTIONS-->
+                        <div *ngFor="let question of questions(groupIndex).controls; let qIndex=index" >
+
+                            <div [formGroupName]="qIndex" >
+
+                                <div class="d-flex" style="margin-bottom: 15px;">
+                                    <input class="form-control" type="text" formControlName="question"
+                                        placeholder="Ερώτηση">
+                                    <!--REMOVE QUESTION-->
+                                    <button (click)="removeQuestion(groupIndex,qIndex)" class="btn-close"
+                                        aria-label="Close" style="height:inherit;"></button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <!--ADD QUESTION-->
+                        <button class="btn btn-primary" type="button" (click)="addQuestion(groupIndex)">Προσθήκη ερώτησης<i
+                                class="fa fa-plus" style="margin-left: 5px;"></i></button>
+                    </div>
+
+                </div>
+
+            </div>
+            <!--ADD GROUP-->
+            <button  class="btn btn-primary" type="button" (click)="addQuestionGroup()" style="margin-left: 5px;">Προσθήκη Ομάδας Ερωτήσεων<i class="fa fa-plus" style="margin-left:5px;"></i></button>
+
+        </div>
+
+
+        <div class="d-flex justify-content-center">
+            <!-- <input class="btn btn-primary" type="submit"  value="Apothikeusi"> -->
+
+            <button type="submit" class="btn btn-primary" [disabled]="questionnaireForm.invalid ||(isLoading$|async)">
+                <!-- <i  class="fas fa-spinner fa-spin"> Saving </i> -->
+                <div *ngIf="isLoading$|async" class="spinner-border" role="status">
+                    <span class="sr-only">Αποθήκευση..</span>
+                </div>
+                <span *ngIf="!(isLoading$|async)">Δημιουργία Ερωτηματολογίου</span>
+            </button>
+
+        </div>
+
+    </form>
+</div>
